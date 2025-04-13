@@ -1,12 +1,39 @@
-import React, { useState } from 'react';
-import { Typography, TextField, MenuItem, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Typography, TextField, MenuItem, Box, Button } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { CEFRLevelOptions } from '../enums/CEFRLevel';
+import Reading from '../components/Reading';
 
 function ExamPractice() {
-  const [level, setLevel] = useState('');
-  const [maxGrade, setMaxGrade] = useState('');
+  // Load initial state from localStorage or use defaults
+  const [level, setLevel] = useState(() => {
+    const savedLevel = localStorage.getItem('examPracticeLevel');
+    return savedLevel || '';
+  });
+
+  const [maxGrade, setMaxGrade] = useState(() => {
+    const savedMaxGrade = localStorage.getItem('examPracticeMaxGrade');
+    return savedMaxGrade || '';
+  });
+
+  const [readingComponents, setReadingComponents] = useState(() => {
+    const savedComponents = localStorage.getItem('examPracticeReadingComponents');
+    return savedComponents ? JSON.parse(savedComponents) : [];
+  });
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('examPracticeLevel', level);
+  }, [level]);
+
+  useEffect(() => {
+    localStorage.setItem('examPracticeMaxGrade', maxGrade);
+  }, [maxGrade]);
+
+  useEffect(() => {
+    localStorage.setItem('examPracticeReadingComponents', JSON.stringify(readingComponents));
+  }, [readingComponents]);
 
   const handleLevelChange = (e) => {
     setLevel(e.target.value);
@@ -20,6 +47,14 @@ function ExamPractice() {
     }
   };
 
+  const handleReadingClick = () => {
+    setReadingComponents(prev => [...prev, { id: Date.now() }]);
+  };
+
+  const handleDeleteReading = (id) => {
+    setReadingComponents(prev => prev.filter(component => component.id !== id));
+  };
+
   return (
     <div className="home-container">
       <Navbar />
@@ -30,10 +65,10 @@ function ExamPractice() {
             Create an Exam Practice
           </Typography>
           
-          <Box sx={{ display: 'flex', gap: 12, maxWidth: '1400px' }}>
+          <Box sx={{ display: 'flex', gap: 12, maxWidth: '1400px', mb: 8 }}>
             <Box sx={{ width: '30%' }}>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                Select the level of the exam:
+                Select the level of the exam
               </Typography>
               <TextField
                 select
@@ -66,7 +101,7 @@ function ExamPractice() {
 
             <Box sx={{ width: '30%' }}>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                Set the maximum grade of the exam:
+                Set the maximum grade of the exam
               </Typography>
               <TextField
                 type="number"
@@ -91,6 +126,65 @@ function ExamPractice() {
                 }}
               />
             </Box>
+          </Box>
+
+          {readingComponents.map(component => (
+            <Reading 
+              key={component.id} 
+              onDelete={() => handleDeleteReading(component.id)} 
+            />
+          ))}
+
+          <Box sx={{ display: 'flex', gap: 2, maxWidth: '1400px' }}>
+            <Button
+              variant="outlined"
+              sx={{
+                color: '#4caf50',
+                borderColor: '#4caf50',
+                '&:hover': {
+                  borderColor: '#388e3c',
+                  backgroundColor: 'rgba(76, 175, 80, 0.04)',
+                },
+                textTransform: 'none',
+                fontSize: '1rem',
+                padding: '8px 24px',
+              }}
+            >
+              + Grammar section
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                color: '#4caf50',
+                borderColor: '#4caf50',
+                '&:hover': {
+                  borderColor: '#388e3c',
+                  backgroundColor: 'rgba(76, 175, 80, 0.04)',
+                },
+                textTransform: 'none',
+                fontSize: '1rem',
+                padding: '8px 24px',
+              }}
+            >
+              + Vocabulary section
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleReadingClick}
+              sx={{
+                color: '#4caf50',
+                borderColor: '#4caf50',
+                '&:hover': {
+                  borderColor: '#388e3c',
+                  backgroundColor: 'rgba(76, 175, 80, 0.04)',
+                },
+                textTransform: 'none',
+                fontSize: '1rem',
+                padding: '8px 24px',
+              }}
+            >
+              + Reading section
+            </Button>
           </Box>
         </main>
       </div>
