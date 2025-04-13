@@ -32,9 +32,9 @@ function Sidebar() {
             </a>
           </li>
           <li>
-            <a href="/exercises">
+            <a href="/exam-practice">
               <AssignmentIcon className="menu-icon" />
-              Exercises
+              Create Exam Practice
             </a>
           </li>
           <li>

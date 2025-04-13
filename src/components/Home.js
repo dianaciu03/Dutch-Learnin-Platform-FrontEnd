@@ -9,7 +9,7 @@ function Home() {
       <div className="content-wrapper">
         <Sidebar />
         <main className="main-content">
-          <h1>Welcome to Dutch Learning Platform</h1>
+          <h1>Welcome to SlimStudie Platform</h1>
           <p>Start your journey to learn Dutch!</p>
         </main>
       </div>
