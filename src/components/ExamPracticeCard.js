@@ -9,6 +9,15 @@ function ExamPracticeCard({ examPractice }) {
     navigate(`/exam-practice/${examPractice.id}`);
   };
 
+  // Determine available sections
+  const sections = [];
+  if (examPractice.readingSections && examPractice.readingSections.length > 0) {
+    sections.push('Reading');
+  }
+  if (examPractice.vocabularySections && examPractice.vocabularySections.length > 0) {
+    sections.push('Vocabulary');
+  }
+
   return (
     <Card sx={{ 
       mb: 2, 
@@ -29,7 +38,7 @@ function ExamPracticeCard({ examPractice }) {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
           <Typography variant="body1">
             <strong>Level:</strong> {examPractice.level}
           </Typography>
@@ -39,7 +48,7 @@ function ExamPracticeCard({ examPractice }) {
         </Box>
 
         <Typography variant="body1" sx={{ mb: 2 }}>
-          <strong>Sections:</strong> {examPractice.readingSections.length} Reading Section{examPractice.readingSections.length !== 1 ? 's' : ''}
+          <strong>Exam Sections:</strong> {sections.join(', ')}
         </Typography>
 
         <Button

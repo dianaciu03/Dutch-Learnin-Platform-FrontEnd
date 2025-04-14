@@ -26,6 +26,15 @@ function ExamPracticeDetails() {
     );
   }
 
+  // Determine available sections
+  const sections = [];
+  if (examPractice.readingSections && examPractice.readingSections.length > 0) {
+    sections.push('Reading');
+  }
+  if (examPractice.vocabularySections && examPractice.vocabularySections.length > 0) {
+    sections.push('Vocabulary');
+  }
+
   return (
     <div className="home-container">
       <Navbar />
@@ -49,6 +58,9 @@ function ExamPracticeDetails() {
                 <Typography variant="body1">
                   <strong>Maximum Grade:</strong> {examPractice.maxGrade}
                 </Typography>
+                <Typography variant="body1">
+                  <strong>Exam Sections:</strong> {sections.join(', ')}
+                </Typography>
               </Box>
               <Typography variant="body1">
                 <strong>Created on:</strong> {new Date(examPractice.createdAt).toLocaleDateString()}
@@ -69,9 +81,9 @@ function ExamPracticeDetails() {
               }}
             >
               <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                Reading Section
+                Reading Section {index + 1}
               </Typography>
-              <Typography variant="body1" sx={{ mb: 6, color: 'text.secondary', fontStyle: 'italic' }}>
+              <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', fontStyle: 'italic' }}>
                 Read the following text and answer the questions below.
               </Typography>
               
