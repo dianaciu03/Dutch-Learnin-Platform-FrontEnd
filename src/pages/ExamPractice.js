@@ -105,10 +105,22 @@ function ExamPractice() {
 
   const handleReadingClick = () => {
     if (!createdExamId) {
-      setError('Please save the exam details before adding sections.');
+      setError('Please save the exam details first');
       return;
     }
-    setReadingComponents(prev => [...prev, { id: Date.now() }]);
+    const newReadingComponent = {
+      id: '', // Empty ID initially, will be set by the backend
+      component: (
+        <Reading
+          key={readingComponents.length}
+          id=""
+          examId={createdExamId}
+          onDelete={() => handleDeleteReading(readingComponents.length)}
+        />
+      ),
+    };
+    setReadingComponents([...readingComponents, newReadingComponent]);
+    localStorage.setItem('readingComponents', JSON.stringify([...readingComponents, newReadingComponent]));
   };
 
   const handleDeleteReading = (id) => {
@@ -286,13 +298,13 @@ function ExamPractice() {
           </Box>
 
           {error && (
-            <Typography variant="body1" color="error" sx={{ mb: 1 }}>
+            <Typography variant="body1" color="error" sx={{ mb: 2 }}>
               {error}
             </Typography>
           )}
 
           {createdExamId && !error && (
-            <Typography variant="body1" color="success.main" sx={{ mb: 1 }}>
+            <Typography variant="body1" color="success.main" sx={{ mb: 2 }}>
               Exam details saved successfully. You can now add sections.
             </Typography>
           )}
@@ -301,6 +313,7 @@ function ExamPractice() {
             <Reading
               key={component.id}
               id={component.id}
+              examId={createdExamId}
               onDelete={() => handleDeleteReading(component.id)}
             />
           ))}
