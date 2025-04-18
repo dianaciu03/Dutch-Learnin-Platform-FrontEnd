@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, TextField, MenuItem, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { CEFRLevelOptions } from '../enums/CEFRLevel';
@@ -22,6 +23,9 @@ function ExamPractice() {
   });
 
   const [name, setName] = useState('');
+  const [createdExamId, setCreatedExamId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   const [readingComponents, setReadingComponents] = useState(() => {
     const savedComponents = localStorage.getItem('examPracticeReadingComponents');
@@ -53,7 +57,57 @@ function ExamPractice() {
     }
   };
 
+  const saveExamDetails = async () => {
+    // Validate required fields
+    if (!name || !level || !maxGrade) {
+      setError('Please fill in all required fields (name, level, and maximum grade) before saving.');
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      console.log('Sending exam details to backend:', { 
+        id: createdExamId, 
+        name, 
+        level, 
+        maxPoints: parseInt(maxGrade) 
+      });
+      
+      const response = await axios.post('http://localhost:5000/exams', {
+        id: createdExamId, // Include the ID if it exists
+        name,
+        level,
+        maxPoints: parseInt(maxGrade),
+      });
+
+      const examId = response.data.id;
+      console.log('Exam ID received from backend:', examId);
+      console.log('Full response data:', response.data);
+      
+      setCreatedExamId(examId);
+      console.log('Created exam ID added to state:', examId);
+      console.log('Current state after update:', { createdExamId: examId, name, level, maxGrade });
+    } catch (err) {
+      console.error('Error saving exam details:', err);
+      setError(err.response?.data || err.message || 'An error occurred while saving the exam details');
+      
+      // If we already have an exam ID, don't clear it on error
+      // This allows the user to continue adding sections even if the update fails
+      if (!createdExamId) {
+        setCreatedExamId(null);
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleReadingClick = () => {
+    if (!createdExamId) {
+      setError('Please save the exam details before adding sections.');
+      return;
+    }
     setReadingComponents(prev => [...prev, { id: Date.now() }]);
   };
 
@@ -62,9 +116,14 @@ function ExamPractice() {
   };
 
   const handlePostExamPractice = () => {
+    if (!createdExamId) {
+      setError('Please save the exam details before posting the exam practice.');
+      return;
+    }
+
     // Create the exam practice object
     const examPractice = {
-      id: Date.now(), // Unique ID for the exam practice
+      id: createdExamId, // Use the ID from the backend
       name,
       level,
       maxGrade,
@@ -100,6 +159,7 @@ function ExamPractice() {
     setMaxGrade('');
     setName('');
     setReadingComponents([]);
+    setCreatedExamId(null);
 
     // Navigate to home page
     console.log('Navigating to home page');
@@ -179,31 +239,63 @@ function ExamPractice() {
             </Box>
           </Box>
 
-          <Box sx={{ width: '45%', mb: 4 }}>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              Enter the name of the exam practice
-            </Typography>
-            <TextField
-              fullWidth
-              label="Exam Practice Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
+          <Box sx={{ width: '100%', mb: 2 }}>
+            <Box sx={{ width: '45%', mb: 2 }}>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                Enter the name of the exam practice
+              </Typography>
+              <TextField
+                fullWidth
+                label="Exam Practice Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: '#4caf50',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#81c784',
+                    },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#81c784',
+                  },
+                }}
+              />
+            </Box>
+            <Button
+              variant="contained"
+              onClick={saveExamDetails}
+              disabled={isSaving}
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  '&:hover fieldset': {
-                    borderColor: '#4caf50',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#81c784',
-                  },
+                backgroundColor: '#4caf50',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#388e3c',
                 },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#81c784',
-                },
+                textTransform: 'none',
+                fontSize: '1rem',
+                padding: '8px 16px',
+                height: '40px',
               }}
-            />
+            >
+              {isSaving ? 'Saving...' : 'Save Exam Details'}
+            </Button>
           </Box>
+
+          {error && (
+            <Typography variant="body1" color="error" sx={{ mb: 1 }}>
+              {error}
+            </Typography>
+          )}
+
+          {createdExamId && !error && (
+            <Typography variant="body1" color="success.main" sx={{ mb: 1 }}>
+              Exam details saved successfully. You can now add sections.
+            </Typography>
+          )}
 
           {readingComponents.map((component) => (
             <Reading
@@ -213,10 +305,12 @@ function ExamPractice() {
             />
           ))}
 
-          <Box sx={{ display: 'flex', gap: 2, width: '100%', justifyContent: 'space-between', maxWidth: '1490px' }}>
+          <Box sx={{ display: 'flex', gap: 2, width: '100%', justifyContent: 'space-between', maxWidth: '1490px', mt: 8 }}>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button
                 variant="outlined"
+                onClick={() => console.log('Grammar section will be added')}
+                disabled={!createdExamId}
                 sx={{
                   color: '#4caf50',
                   borderColor: '#4caf50',
@@ -233,6 +327,8 @@ function ExamPractice() {
               </Button>
               <Button
                 variant="outlined"
+                onClick={() => console.log('Vocabulary section will be added')}
+                disabled={!createdExamId}
                 sx={{
                   color: '#4caf50',
                   borderColor: '#4caf50',
@@ -250,6 +346,7 @@ function ExamPractice() {
               <Button
                 variant="outlined"
                 onClick={handleReadingClick}
+                disabled={!createdExamId}
                 sx={{
                   color: '#4caf50',
                   borderColor: '#4caf50',
@@ -268,6 +365,7 @@ function ExamPractice() {
             <Button
               variant="contained"
               onClick={handlePostExamPractice}
+              disabled={!createdExamId}
               sx={{
                 backgroundColor: '#4caf50',
                 color: 'white',
