@@ -63,7 +63,7 @@ function ExamPracticeDetails() {
                 </Typography>
               </Box>
               <Typography variant="body1">
-                <strong>Created on:</strong> {new Date(examPractice.createdAt).toLocaleDateString()}
+                {/* <strong>Created on:</strong> {new Date(examPractice.createdAt).toLocaleDateString()} */}
               </Typography>
             </Box>
           </Box>

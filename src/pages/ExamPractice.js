@@ -10,7 +10,8 @@ import { useExamPractice } from '../context/ExamPracticeContext';
 
 function ExamPractice() {
   const navigate = useNavigate();
-  const { addExamPractice } = useExamPractice();
+  const { fetchExamPractices } = useExamPractice();
+
   // Load initial state from localStorage or use defaults
   const [level, setLevel] = useState(() => {
     const savedLevel = localStorage.getItem('examPracticeLevel');
@@ -123,59 +124,41 @@ function ExamPractice() {
     localStorage.setItem('readingComponents', JSON.stringify([...readingComponents, newReadingComponent]));
   };
 
-  const handleDeleteReading = (id) => {
-    setReadingComponents(prev => prev.filter(component => component.id !== id));
+  const handleDeleteReading = (index) => {
+    setReadingComponents(prev => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
   };
 
-  const handlePostExamPractice = () => {
-    if (!createdExamId) {
-      setError('Please save the exam details before posting the exam practice.');
-      return;
+  const handlePostExamPractice = async () => {
+    try {
+      // Clear all local storage data
+      localStorage.removeItem('examPracticeLevel');
+      localStorage.removeItem('examPracticeMaxGrade');
+      localStorage.removeItem('examPracticeReadingComponents');
+      readingComponents.forEach(component => {
+        localStorage.removeItem(`readingText_${component.id}`);
+        localStorage.removeItem(`questions_${component.id}`);
+      });
+
+      // Clear all state
+      setLevel('');
+      setMaxGrade('');
+      setName('');
+      setReadingComponents([]);
+      setCreatedExamId(null);
+      setError(null);
+
+      // Fetch updated exam list before navigation
+      await fetchExamPractices();
+
+      // Navigate to home page
+      navigate('/');
+    } catch (err) {
+      setError('An error occurred while cleaning up the exam practice.');
     }
-
-    // Create the exam practice object
-    const examPractice = {
-      id: createdExamId, // Use the ID from the backend
-      name,
-      level,
-      maxGrade,
-      readingSections: readingComponents.map(component => {
-        const savedText = localStorage.getItem(`readingText_${component.id}`);
-        const savedQuestions = localStorage.getItem(`questions_${component.id}`);
-        return {
-          id: component.id,
-          text: savedText || '',
-          questions: savedQuestions ? JSON.parse(savedQuestions) : []
-        };
-      }),
-      createdAt: new Date().toISOString()
-    };
-
-    console.log('Created exam practice:', examPractice);
-
-    // Add the new exam practice using context
-    addExamPractice(examPractice);
-    console.log('Added exam practice to context');
-
-    // Clear the form data from localStorage
-    localStorage.removeItem('examPracticeLevel');
-    localStorage.removeItem('examPracticeMaxGrade');
-    localStorage.removeItem('examPracticeReadingComponents');
-    readingComponents.forEach(component => {
-      localStorage.removeItem(`readingText_${component.id}`);
-      localStorage.removeItem(`questions_${component.id}`);
-    });
-
-    // Clear the form state
-    setLevel('');
-    setMaxGrade('');
-    setName('');
-    setReadingComponents([]);
-    setCreatedExamId(null);
-
-    // Navigate to home page
-    console.log('Navigating to home page');
-    navigate('/');
   };
 
   return (

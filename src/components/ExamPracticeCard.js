@@ -34,7 +34,7 @@ function ExamPracticeCard({ examPractice }) {
             {examPractice.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {new Date(examPractice.createdAt).toLocaleDateString()}
+            {/* {new Date(examPractice.createdAt).toLocaleDateString()} */}
           </Typography>
         </Box>
 

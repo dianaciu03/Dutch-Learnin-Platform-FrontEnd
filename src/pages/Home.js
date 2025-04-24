@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Typography, Box, Pagination } from '@mui/material';
+import { Typography, Box, Pagination, CircularProgress, Alert } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import ExamPracticeCard from '../components/ExamPracticeCard';
 import { useExamPractice } from '../context/ExamPracticeContext';
 
 function Home() {
-  const { examPractices } = useExamPractice();
+  const { examPractices, loading, error } = useExamPractice();
   const [currentPage, setCurrentPage] = useState(1);
   const practicesPerPage = 10; // 2 practices per row × 5 rows
 
@@ -19,6 +19,36 @@ function Home() {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+
+  if (loading) {
+    return (
+      <div className="home-container">
+        <Navbar />
+        <div className="content-wrapper">
+          <Sidebar />
+          <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="home-container">
+        <Navbar />
+        <div className="content-wrapper">
+          <Sidebar />
+          <main className="main-content">
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="home-container">
