@@ -69,19 +69,16 @@ function ExamPractice() {
     setError(null);
 
     try {
-      console.log('Sending exam details to backend:', { 
-        id: createdExamId, 
-        name, 
-        level, 
-        maxPoints: parseInt(maxGrade) 
-      });
+      const payload = {
+        id: createdExamId,
+        name: name,
+        level: String(level),
+        maxPoints: parseInt(maxGrade)
+      };
+
+      console.log('Sending exam details to backend:', payload);
       
-      const response = await axios.post('http://localhost:5000/exams', {
-        id: createdExamId, // Include the ID if it exists
-        name,
-        level,
-        maxPoints: parseInt(maxGrade),
-      });
+      const response = await axios.post('http://localhost:5000/exams', payload);
 
       const examId = response.data.id;
       console.log('Exam ID received from backend:', examId);
@@ -92,10 +89,29 @@ function ExamPractice() {
       console.log('Current state after update:', { createdExamId: examId, name, level, maxGrade });
     } catch (err) {
       console.error('Error saving exam details:', err);
-      setError(err.response?.data || err.message || 'An error occurred while saving the exam details');
       
-      // If we already have an exam ID, don't clear it on error
-      // This allows the user to continue adding sections even if the update fails
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (typeof err.response.data === 'string') {
+          setError(err.response.data);
+        } else if (err.response.data && err.response.data.title) {
+          setError(err.response.data.title);
+        } else if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else if (err.response.data && err.response.data.errors) {
+          setError(err.response.data.errors.join(', '));
+        } else {
+          setError(`Server error: ${err.response.status}`);
+        }
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError(err.message || 'An error occurred while saving the exam details');
+      }
+      
       if (!createdExamId) {
         setCreatedExamId(null);
       }

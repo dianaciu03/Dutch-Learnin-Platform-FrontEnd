@@ -13,7 +13,6 @@ function ExamPracticeCard({ examPractice }) {
 
   // Determine available sections
   const sectionsSet = new Set();
-
   if (examPractice.examComponents && examPractice.examComponents.length > 0) {
     examPractice.examComponents.forEach(component => {
       const matchedComponent = ComponentTypeOptions.find(option => option.value === component.componentType);
@@ -22,7 +21,6 @@ function ExamPracticeCard({ examPractice }) {
       }
     });
   }
-  
   const sections = Array.from(sectionsSet);
   console.log(sections);
 
@@ -33,7 +31,7 @@ function ExamPracticeCard({ examPractice }) {
     <Card sx={{ 
       mb: 2, 
       border: '1px solid #e0e0e0',
-      maxWidth: '727px',
+      maxWidth: '100%',
       width: '100%',
       '&:hover': {
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',

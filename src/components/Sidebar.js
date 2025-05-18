@@ -1,11 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import useAuthStore from '../store/authStore';
 
 function Sidebar() {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -14,34 +18,36 @@ function Sidebar() {
       <nav className="sidebar-nav">
         <ul>
           <li>
-            <a href="/">
+            <Link to="/">
               <HomeIcon className="menu-icon" />
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/lessons">
+            <Link to="/lessons">
               <SchoolIcon className="menu-icon" />
               Lessons
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/vocabulary">
+            <Link to="/vocabulary">
               <MenuBookIcon className="menu-icon" />
               Vocabulary
-            </a>
+            </Link>
           </li>
+          {isAuthenticated && (
+            <li>
+              <Link to="/create-exam">
+                <AssignmentIcon className="menu-icon" />
+                Create Exam Practice
+              </Link>
+            </li>
+          )}
           <li>
-            <a href="/create-exam">
-              <AssignmentIcon className="menu-icon" />
-              Create Exam Practice
-            </a>
-          </li>
-          <li>
-            <a href="/progress">
+            <Link to="/progress">
               <TrendingUpIcon className="menu-icon" />
               Progress
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>

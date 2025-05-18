@@ -73,14 +73,11 @@ function Home() {
             <>
               <Box sx={{ 
                 mb: 4,
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '24px 32px',
-                justifyContent: 'space-between',
-                '& > *': {
-                  flex: '0 1 calc(50% - 16px)',
-                  minWidth: '300px',
-                }
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 3,
+                maxWidth: '1400px',
+                width: '100%'
               }}>
                 {currentPractices.map((practice) => (
                   <ExamPracticeCard key={practice.id} examPractice={practice} />

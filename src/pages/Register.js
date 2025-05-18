@@ -81,16 +81,16 @@ function Register() {
           </Typography>
         </Divider>
         
-        <Button
-          variant="contained"
-          fullWidth
-          size="large"
-          startIcon={<PersonAddIcon />}
-          className="auth-button"
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            startIcon={<PersonAddIcon />}
+            className="auth-button"
           onClick={handleRegister}
-        >
-          Create Account
-        </Button>
+          >
+            Create Account
+          </Button>
         
         <Typography variant="body2" className="auth-footer">
           Already have an account? <Button onClick={() => login('login')} className="auth-link">Sign in</Button>
