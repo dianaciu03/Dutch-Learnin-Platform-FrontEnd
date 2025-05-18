@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ExamPracticeProvider } from './context/ExamPracticeContext';
+import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,6 +11,7 @@ import './App.css';
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <ExamPracticeProvider>
         <Routes>
@@ -21,6 +23,7 @@ function App() {
         </Routes>
       </ExamPracticeProvider>
     </Router>
+    </AuthProvider>
   );
 }
 

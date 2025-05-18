@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
-import { Box, Paper, Typography, TextField, Button, Divider, IconButton, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Paper, Typography, Button, Divider, IconButton, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import GoogleIcon from '@mui/icons-material/Google';
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Register() {
   const navigate = useNavigate();
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState('teacher');
+  const { login } = useAuth();
 
   const handleRoleChange = (event, newRole) => {
     if (newRole !== null) {
       setRole(newRole);
     }
+  };
+
+  const handleRegister = () => {
+    const flow = role === 'teacher' ? 'registerTeacher' : 'registerStudent';
+    login(flow);
   };
 
   return (
@@ -63,6 +70,7 @@ function Register() {
           size="large"
           startIcon={<GoogleIcon />}
           className="google-button"
+          onClick={handleRegister}
         >
           Continue with Google
         </Button>
@@ -73,70 +81,19 @@ function Register() {
           </Typography>
         </Divider>
         
-        <form className="auth-form">
-          <Box className="name-fields-container">
-            <TextField
-              label="First Name"
-              type="text"
-              variant="outlined"
-              className="auth-input first-name-field"
-              placeholder="Enter your first name"
-            />
-            <TextField
-              label="Last Name"
-              type="text"
-              variant="outlined"
-              className="auth-input last-name-field"
-              placeholder="Enter your last name"
-            />
-          </Box>
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            variant="outlined"
-            className="auth-input"
-            placeholder="Enter your email address"
-          />
-          {role === 'teacher' && (
-            <TextField
-              label="Educational Institution"
-              type="text"
-              fullWidth
-              variant="outlined"
-              className="auth-input teacher-field"
-              placeholder="Enter your teaching institution"
-            />
-          )}
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            variant="outlined"
-            className="auth-input"
-            placeholder="Create a strong password"
-          />
-          <TextField
-            label="Confirm Password"
-            type="password"
-            fullWidth
-            variant="outlined"
-            className="auth-input"
-            placeholder="Re-enter your password"
-          />
-          <Button
-            variant="contained"
-            fullWidth
-            size="large"
-            startIcon={<PersonAddIcon />}
-            className="auth-button"
-          >
-            Create Account
-          </Button>
-        </form>
+        <Button
+          variant="contained"
+          fullWidth
+          size="large"
+          startIcon={<PersonAddIcon />}
+          className="auth-button"
+          onClick={handleRegister}
+        >
+          Create Account
+        </Button>
         
         <Typography variant="body2" className="auth-footer">
-          Already have an account? <a href="/login" className="auth-link">Sign in</a>
+          Already have an account? <Button onClick={() => login('login')} className="auth-link">Sign in</Button>
         </Typography>
       </Paper>
     </Box>

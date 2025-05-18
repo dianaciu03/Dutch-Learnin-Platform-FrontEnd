@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { CEFRLevelOptions } from '../enums/CEFRLevel';
+import { ComponentTypeOptions } from '../enums/ComponentType';
 
 function ExamPracticeCard({ examPractice }) {
   const navigate = useNavigate();
@@ -10,13 +12,22 @@ function ExamPracticeCard({ examPractice }) {
   };
 
   // Determine available sections
-  const sections = [];
-  if (examPractice.readingSections && examPractice.readingSections.length > 0) {
-    sections.push('Reading');
+  const sectionsSet = new Set();
+
+  if (examPractice.examComponents && examPractice.examComponents.length > 0) {
+    examPractice.examComponents.forEach(component => {
+      const matchedComponent = ComponentTypeOptions.find(option => option.value === component.componentType);
+      if (matchedComponent) {
+        sectionsSet.add(matchedComponent.label);
+      }
+    });
   }
-  if (examPractice.vocabularySections && examPractice.vocabularySections.length > 0) {
-    sections.push('Vocabulary');
-  }
+  
+  const sections = Array.from(sectionsSet);
+  console.log(sections);
+
+  const selectedLevel = CEFRLevelOptions.find(option => option.value === examPractice.level);
+  console.log(selectedLevel);
 
   return (
     <Card sx={{ 
@@ -31,7 +42,7 @@ function ExamPracticeCard({ examPractice }) {
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-            {examPractice.name}
+            Title: {examPractice.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {/* {new Date(examPractice.createdAt).toLocaleDateString()} */}
@@ -40,10 +51,10 @@ function ExamPracticeCard({ examPractice }) {
 
         <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
           <Typography variant="body1">
-            <strong>Level:</strong> {examPractice.level}
+            <strong>Level:</strong> {selectedLevel ? selectedLevel.label : "Unknown Level"}
           </Typography>
           <Typography variant="body1">
-            <strong>Maximum Grade:</strong> {examPractice.maxGrade}
+            <strong>Maximum Points:</strong> {examPractice.maxPoints}
           </Typography>
         </Box>
 

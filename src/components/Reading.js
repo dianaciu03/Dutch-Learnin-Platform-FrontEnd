@@ -70,7 +70,7 @@ function Reading({ onDelete, id, examId }) {
       };
 
       console.log('Reading component payload:', JSON.stringify(payload));
-      const response = await axios.post('http://localhost:5000/reading', payload);
+      const response = await axios.post('http://localhost:5000/exams/reading', payload);
 
       console.log('Section saved successfully:', response.data);
       
