@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useEffect, useCallback } from 'react';
 import { PublicClientApplication, EventType } from '@azure/msal-browser';
 import { msalConfig, loginRequest } from '../config/authConfig';
 import useAuthStore from '../store/authStore';
@@ -9,6 +9,29 @@ export const AuthProvider = ({ children }) => {
   const msalInstance = useMemo(() => new PublicClientApplication(msalConfig), []);
   const setAuth = useAuthStore(state => state.setAuth);
   const logout = useAuthStore(state => state.logout);
+
+  const getStoredToken = useCallback(async () => {
+    try {
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        const account = accounts[0];
+        try {
+          const response = await msalInstance.acquireTokenSilent({
+            scopes: loginRequest.scopes,
+            account: account
+          });
+          return response.idToken;
+        } catch (error) {
+          console.error('Error acquiring token silently:', error);
+          return null;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error retrieving stored token:', error);
+      return null;
+    }
+  }, [msalInstance]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -40,7 +63,20 @@ export const AuthProvider = ({ children }) => {
               setAuth(response.idToken);
             } catch (popupError) {
               console.error('Error acquiring token popup:', popupError);
+              // Try to get token from cache
+              const storedToken = await getStoredToken();
+              if (storedToken) {
+                console.log('Restoring token from cache');
+                setAuth(storedToken);
+              }
             }
+          }
+        } else {
+          // Try to get token from cache if no active account
+          const storedToken = await getStoredToken();
+          if (storedToken) {
+            console.log('Restoring token from cache');
+            setAuth(storedToken);
           }
         }
 
@@ -65,11 +101,17 @@ export const AuthProvider = ({ children }) => {
         });
       } catch (error) {
         console.error('Error initializing auth:', error);
+        // Try to get token from cache on error
+        const storedToken = await getStoredToken();
+        if (storedToken) {
+          console.log('Restoring token from cache after error');
+          setAuth(storedToken);
+        }
       }
     };
 
     initializeAuth();
-  }, [msalInstance, setAuth, logout]);
+  }, [msalInstance, setAuth, logout, getStoredToken]);
 
   const login = async (flow = 'login') => {
     try {
