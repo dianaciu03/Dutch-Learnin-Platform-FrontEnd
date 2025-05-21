@@ -70,10 +70,10 @@ function ExamPractice() {
 
     try {
       const payload = {
-        id: createdExamId,
+        id: createdExamId, 
         name: name,
         level: String(level),
-        maxPoints: parseInt(maxGrade)
+        maxPoints: parseInt(maxGrade) 
       };
 
       console.log('Sending exam details to backend:', payload);

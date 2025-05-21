@@ -5,6 +5,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import DownloadIcon from '@mui/icons-material/Download';
 import useAuthStore from '../store/authStore';
 
 function Sidebar() {
@@ -36,12 +37,12 @@ function Sidebar() {
             </Link>
           </li>
           {isAuthenticated && (
-            <li>
+          <li>
               <Link to="/create-exam">
-                <AssignmentIcon className="menu-icon" />
-                Create Exam Practice
+              <AssignmentIcon className="menu-icon" />
+              Create Exam Practice
               </Link>
-            </li>
+          </li>
           )}
           <li>
             <Link to="/progress">
@@ -49,6 +50,14 @@ function Sidebar() {
               Progress
             </Link>
           </li>
+          {isAuthenticated && (
+            <li>
+              <Link to="#" onClick={(e) => e.preventDefault()}>
+                <DownloadIcon className="menu-icon" />
+                Export personal data
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </div>

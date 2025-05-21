@@ -59,6 +59,18 @@ function Navbar() {
                 Role: {role.charAt(0).toUpperCase() + role.slice(1)}
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem 
+                onClick={handleClose}
+                sx={{ 
+                  color: 'error.main',
+                  '&:hover': {
+                    backgroundColor: 'rgba(211, 47, 47, 0.08)',
+                    color: 'error.main'
+                  }
+                }}
+              >
+                Delete my account
+              </MenuItem>
             </Menu>
           </>
         ) : (
