@@ -59,14 +59,12 @@ export const AuthProvider = ({ children }) => {
                 scopes: loginRequest.scopes,
                 account: activeAccount
               });
-              console.log('Token acquired via popup:', response);
               setAuth(response.idToken);
             } catch (popupError) {
               console.error('Error acquiring token popup:', popupError);
               // Try to get token from cache
               const storedToken = await getStoredToken();
               if (storedToken) {
-                console.log('Restoring token from cache');
                 setAuth(storedToken);
               }
             }
