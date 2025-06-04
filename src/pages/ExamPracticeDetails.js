@@ -4,11 +4,13 @@ import { useParams } from 'react-router-dom';
 import { useExamPractice } from '../context/ExamPracticeContext';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import { CEFRLevelOptions } from '../enums/CEFRLevel';
+import { ComponentTypeOptions } from '../enums/ComponentType';
 
 function ExamPracticeDetails() {
   const { id } = useParams();
   const { examPractices } = useExamPractice();
-  const examPractice = examPractices.find(practice => practice.id === Number(id));
+  const examPractice = examPractices.find(practice => practice.id === String(id));
 
   if (!examPractice) {
     return (
@@ -27,13 +29,25 @@ function ExamPracticeDetails() {
   }
 
   // Determine available sections
-  const sections = [];
-  if (examPractice.readingSections && examPractice.readingSections.length > 0) {
-    sections.push('Reading');
+  const sectionsSet = new Set();
+  const readingSections = [];
+  
+  if (examPractice.ExamComponents && examPractice.ExamComponents.length > 0) {
+    examPractice.ExamComponents.forEach(component => {
+      const matchedComponent = ComponentTypeOptions.find(option => option.value === component.ComponentType);
+      if (matchedComponent) {
+        sectionsSet.add(matchedComponent.label);
+        
+        // Capture reading components separately to display their text and questions
+        if (component.ComponentType === 2) { // 2 represents Reading
+          readingSections.push(component);
+        }
+      }
+    });
   }
-  if (examPractice.vocabularySections && examPractice.vocabularySections.length > 0) {
-    sections.push('Vocabulary');
-  }
+  const sections = Array.from(sectionsSet);
+
+  const selectedLevel = CEFRLevelOptions.find(option => option.value === examPractice.Level);
 
   return (
     <div className="home-container">
@@ -43,7 +57,7 @@ function ExamPracticeDetails() {
         <main className="main-content" style={{ paddingBottom: '100px' }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              {examPractice.name}
+              {examPractice.Name}
             </Typography>
             <Box sx={{ 
               display: 'flex', 
@@ -53,22 +67,19 @@ function ExamPracticeDetails() {
             }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Typography variant="body1">
-                  <strong>Level:</strong> {examPractice.level}
+                  <strong>Level:</strong> {selectedLevel ? selectedLevel.label : "Unknown Level"}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Maximum Grade:</strong> {examPractice.maxGrade}
+                  <strong>Maximum Points:</strong> {examPractice.MaxPoints}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Exam Sections:</strong> {sections.join(', ')}
                 </Typography>
               </Box>
-              <Typography variant="body1">
-                {/* <strong>Created on:</strong> {new Date(examPractice.createdAt).toLocaleDateString()} */}
-              </Typography>
             </Box>
           </Box>
 
-          {examPractice.readingSections.map((section, index) => (
+          {readingSections.map((section, index) => (
             <Paper 
               key={section.id} 
               elevation={2} 
@@ -88,7 +99,7 @@ function ExamPracticeDetails() {
               </Typography>
               
               <Typography variant="body1" sx={{ mb: 3, whiteSpace: 'pre-wrap' }}>
-                {section.text}
+                {section.GivenText}
               </Typography>
 
               <Divider sx={{ my: 3 }} />
@@ -97,7 +108,7 @@ function ExamPracticeDetails() {
                 Questions:
               </Typography>
 
-              {section.questions.map((question, qIndex) => (
+              {section.Questions.map((question, qIndex) => (
                 <Box 
                   key={qIndex} 
                   sx={{ 
@@ -112,13 +123,13 @@ function ExamPracticeDetails() {
                     Question {qIndex + 1}
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>
-                    {question.question}
+                    {question.Question}
                   </Typography>
                   <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
                     Answer {qIndex + 1}
                   </Typography>
                   <Typography variant="body1">
-                    {question.answer}
+                    {question.Answer}
                   </Typography>
                 </Box>
               ))}
