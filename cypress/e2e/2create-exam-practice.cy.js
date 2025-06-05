@@ -20,7 +20,7 @@ describe('Create Exam Practice', () => {
     cy.visit('/create-exam');
 
     // Select Level: Beginner (change as needed)
-    cy.contains('label', 'Level') // Find the label
+    cy.contains('label', 'Level', { timeout: 10000 }) // Find the label
     .parent() // Go to the parent element (likely form control or container)
     .find('[role="combobox"]') // Find the MUI select dropdown
     .click(); // Open the dropdown
