@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Box, Button } from '@mui/material';
+import { Typography, TextField, Box, Button, MenuItem} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../config/axiosConfig';
 import Sidebar from '../components/Sidebar';
@@ -209,43 +209,33 @@ function ExamPractice() {
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
                 Select the level of the exam
               </Typography>
-              <select
+              <TextField
+                select
+                fullWidth
+                label="Level"
                 value={level}
                 onChange={handleLevelChange}
                 required
-                data-testid="level-select"
-                className="custom-select"
-                label="Level"
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  fontSize: '1rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  backgroundColor: 'white',
-                  cursor: 'pointer',
-                  appearance: 'none',
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 14px center',
-                  backgroundSize: '16px',
-                  '&:hover': {
-                    borderColor: '#4caf50',
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: '#4caf50',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#81c784',
+                    },
                   },
-                  '&:focus': {
-                    outline: 'none',
-                    borderColor: '#81c784',
-                    boxShadow: '0 0 0 2px rgba(129, 199, 132, 0.2)',
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#81c784',
                   },
                 }}
               >
-                <option value="">Select a level</option>
                 {CEFRLevelOptions.map((option) => (
-                  <option key={option.value} value={option.value} data-testid={`level-option-${option.value}`}>
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
+              </TextField>
             </Box>
 
             <Box sx={{ width: '30%' }}>

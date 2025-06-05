@@ -20,14 +20,14 @@ describe('Create Exam Practice', () => {
     cy.visit('/create-exam');
 
     // Select Level: Beginner (change as needed)
-    cy.contains('label', 'Level', { timeout: 10000 }) // Find the label
-    .parent() // Go to the parent element (likely form control or container)
-    .find('[role="combobox"]') // Find the MUI select dropdown
-    .click(); // Open the dropdown
+    cy.contains('label', 'Level', { timeout: 10000 }) 
+    .parent() 
+    .find('[role="combobox"]') 
+    .click(); 
   
-    cy.get('ul[role="listbox"]') // Now find the dropdown list
-        .contains('li', 'B1 - Intermediate') // Find the desired option
-        .click(); // Click it
+    cy.get('ul[role="listbox"]') 
+        .contains('li', 'B1 - Intermediate') 
+        .click(); 
 
     // Input Maximum Grade: 100
     cy.contains('label', 'Maximum Grade')
@@ -38,7 +38,7 @@ describe('Create Exam Practice', () => {
         window.HTMLInputElement.prototype,
         'value'
       ).set;
-      nativeInputValueSetter.call($input[0], '100');  // set value as string
+      nativeInputValueSetter.call($input[0], '100'); 
       
       $input[0].dispatchEvent(new Event('change', { bubbles: true }));
     });
