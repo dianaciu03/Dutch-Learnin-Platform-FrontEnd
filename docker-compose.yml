@@ -95,32 +95,6 @@ services:
       retries: 5
     restart: always
 
-  # Prometheus Service for Monitoring
-  prometheus:
-    image: prom/prometheus:v2.42.0
-    container_name: ss-prometheus
-    ports:
-      - "9090:9090"  # Prometheus UI
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Configuration file for Prometheus
-    networks:
-      - slimstudie-network
-    restart: always
-
-  # Grafana Service for Visualization
-  grafana:
-    image: grafana/grafana:8.3.0
-    container_name: ss-grafana
-    ports:
-      - "3000:3000"  # Grafana UI
-    volumes:
-      - grafana_data:/var/lib/grafana # Persist Grafana data (dashboards, etc.)
-    depends_on:
-      - prometheus
-    networks:
-      - slimstudie-network
-    restart: always
-
 networks:
   slimstudie-network:
     driver: bridge
@@ -129,6 +103,4 @@ volumes:
   cosmosdb_data: # Named volume declaration
     driver: local 
   rabbitmq_data:  
-    driver: local
-  grafana_data:
     driver: local
