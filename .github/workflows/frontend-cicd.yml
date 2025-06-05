@@ -1,4 +1,4 @@
-name: Frontend CI/CD
+name: SlimStudie Frontend CI/CD
 
 on:
   push:
@@ -6,8 +6,14 @@ on:
   pull_request:
     branches: [ main ]
 
+  workflow_run:
+    workflows: ["SlimStudie Backend CI/CD"]    # backend workflow name here
+    types:
+      - completed
+
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     name: Build Frontend
     runs-on: ubuntu-latest
 
