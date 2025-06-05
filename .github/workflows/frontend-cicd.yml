@@ -64,7 +64,7 @@ jobs:
         run: |
           echo "Waiting for frontend to start..."
           n=0
-          until curl -sSf http://localhost:3000 > /dev/null || [ $n -ge 30 ]; do
+          until curl -sSf http://localhost:3001 > /dev/null || [ $n -ge 30 ]; do
             echo "Still waiting... ($n)"
             n=$((n+1))
             sleep 5
