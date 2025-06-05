@@ -35,8 +35,6 @@ services:
       - "8083:8083"
     environment:
       - DOCKER_ENV=true
-    env_file:
-      - .env
     networks:
       - slimstudie-network
     restart: always
@@ -51,8 +49,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - DOCKER_OCELOT_CONFIG_PATH=/app/Properties/ocelot.json
       - DOCKER_ENV=true
-    env_file:
-      - .env
     networks:
       - slimstudie-network
     restart: always
