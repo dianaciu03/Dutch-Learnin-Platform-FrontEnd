@@ -69,33 +69,27 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
   
-      - name: Install Cypress Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+      - name: Install Dependencies
+        run: npm ci
   
       - name: Wait for the app to be ready
         run: |
-          echo "Waiting for the frontend to start..."
+          echo "Waiting for the app to be up..."
           n=0
-          until curl -sSf http://localhost:3001 > /dev/null || [ $n -ge 10 ]; do
-            echo "Waiting for app... ($n)"
+          until curl -sSf http://localhost:3001 > /dev/null || [ $n -ge 20 ]; do
+            echo "Waiting for frontend... ($n)"
             n=$((n+1))
             sleep 5
           done
   
-      - name: Install Node (for Cypress)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-  
-      - name: Install Node Dependencies
-        run: npm ci
-  
       - name: Run Cypress Tests
-        run: npm run cypress:run
-        env:
-          CYPRESS_baseUrl: http://localhost:3001
+        uses: cypress-io/github-action@v6
+        with:
+          start: ''
+          wait-on: 'http://localhost:3001'
+          wait-on-timeout: 120
+          command: npm run cypress:run
+          browser: chrome
 
   push-image:
     name: Push Frontend Image to DockerHub
