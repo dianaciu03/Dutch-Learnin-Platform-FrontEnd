@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 
 const ExamPracticeContext = createContext();
 
@@ -15,7 +15,7 @@ export function ExamPracticeProvider({ children }) {
   const fetchExamPractices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/exams');
+      const response = await axiosInstance.get('/exams');
       // Ensure response.data is an array before sorting
       console.log('Response data when fetching exams:', response.data);
       const practices = response.data.examList;
@@ -31,7 +31,7 @@ export function ExamPracticeProvider({ children }) {
 
   const addExamPractice = async (newPractice) => {
     try {
-      const response = await axios.post('http://localhost:5000/exams', newPractice);
+      const response = await axiosInstance.post('/exams', newPractice);
       setExamPractices(prev => {
         const updated = [response.data, ...prev];
         return updated.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -50,6 +50,10 @@ export function ExamPracticeProvider({ children }) {
   );
 }
 
-export function useExamPractice() {
-  return useContext(ExamPracticeContext);
-} 
+export const useExamPractice = () => {
+  const context = useContext(ExamPracticeContext);
+  if (!context) {
+    throw new Error('useExamPractice must be used within an ExamPracticeProvider');
+  }
+  return context;
+}; 

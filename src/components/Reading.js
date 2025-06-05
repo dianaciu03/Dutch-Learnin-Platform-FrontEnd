@@ -3,7 +3,7 @@ import { Box, Typography, Button, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 
 function Reading({ onDelete, id, examId }) {
   const [readingText, setReadingText] = useState(() => {
@@ -70,7 +70,7 @@ function Reading({ onDelete, id, examId }) {
       };
 
       console.log('Reading component payload:', JSON.stringify(payload));
-      const response = await axios.post('http://localhost:5000/exams/reading', payload);
+      const response = await axiosInstance.post('/exams/reading', payload);
 
       console.log('Section saved successfully:', response.data);
       

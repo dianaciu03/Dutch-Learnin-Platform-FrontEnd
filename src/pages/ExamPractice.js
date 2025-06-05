@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, TextField, MenuItem, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { CEFRLevelOptions } from '../enums/CEFRLevel';
@@ -78,7 +78,7 @@ function ExamPractice() {
 
       console.log('Sending exam details to backend:', payload);
       
-      const response = await axios.post('http://localhost:5000/exams', payload);
+      const response = await axiosInstance.post('/exams', payload);
 
       const examId = response.data.id;
       console.log('Exam ID received from backend:', examId);
