@@ -1,0 +1,134 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: slim-studie-frontend
+    ports:
+      - "3001:80"
+    environment:
+      - DOCKER_ENV=true
+      - REACT_APP_AZURE_CLIENT_ID=${REACT_APP_AZURE_CLIENT_ID}
+    networks:
+      - slimstudie-network
+    restart: always
+
+  user-service:
+    image: dianaciu/my-user-service
+    container_name: ss-user-service
+    ports:
+      - "8084:8084"
+      - "8085:8085"
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - slimstudie-network
+    restart: always
+
+  content-service:
+    image: dianaciu/my-content-service
+    container_name: ss-content-service
+    ports:
+      - "8082:8082"
+      - "8083:8083"
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - slimstudie-network
+    restart: always
+
+  api-gateway:
+    image: dianaciu/my-api-gateway
+    container_name: ss-api-gateway
+    ports:
+      - "8086:8086"
+      - "8087:8087"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOCKER_OCELOT_CONFIG_PATH=/app/Properties/ocelot.json
+      - DOCKER_ENV=true
+    networks:
+      - slimstudie-network
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ss-rabbitmq
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Stores messages/queues
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - slimstudie-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  cosmosdb-emulator:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
+    container_name: ss-cosmosdb-emulator
+    ports:
+      - "8081:8081"  # Cosmos DB HTTP API port
+      - "10251:10251"  # Cosmos DB Gateway port
+      - "10252:10252" 
+      - "10253:10253"  
+      - "10254:10254" 
+    environment:
+      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
+      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
+    volumes:
+    - cosmosdb_data:/tmp/cosmos/appdata  # Persists data to the host
+    networks:
+      - slimstudie-network
+    healthcheck:
+      test: ["CMD", "curl", "-k", "https://localhost:8081/_explorer/index.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  # Prometheus Service for Monitoring
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    container_name: ss-prometheus
+    ports:
+      - "9090:9090"  # Prometheus UI
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Configuration file for Prometheus
+    networks:
+      - slimstudie-network
+    restart: always
+
+  # Grafana Service for Visualization
+  grafana:
+    image: grafana/grafana:8.3.0
+    container_name: ss-grafana
+    ports:
+      - "3000:3000"  # Grafana UI
+    volumes:
+      - grafana_data:/var/lib/grafana # Persist Grafana data (dashboards, etc.)
+    depends_on:
+      - prometheus
+    networks:
+      - slimstudie-network
+    restart: always
+
+networks:
+  slimstudie-network:
+    driver: bridge
+
+volumes:
+  cosmosdb_data: # Named volume declaration
+    driver: local 
+  rabbitmq_data:  
+    driver: local
+  grafana_data:
+    driver: local

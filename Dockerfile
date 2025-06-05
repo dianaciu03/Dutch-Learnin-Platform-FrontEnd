@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
@@ -11,6 +11,9 @@ RUN npm ci
 
 # Copy source code
 COPY . .
+
+# Set environment variable for Docker build
+ENV REACT_APP_DOCKER_ENV=true
 
 # Build the application
 RUN npm run build
