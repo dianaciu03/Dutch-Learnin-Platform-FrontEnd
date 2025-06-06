@@ -7,6 +7,7 @@ on:
     branches: [ main ]
   repository_dispatch:
     types: [backend-finished]
+  workflow_dispatch:
 
 jobs:
   build:
