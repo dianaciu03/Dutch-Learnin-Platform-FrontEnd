@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ main ]
   repository_dispatch:
-    types: [backend-finished]
-  workflow_dispatch:
+    types:
+      - trigger-event
 
 jobs:
   build:
