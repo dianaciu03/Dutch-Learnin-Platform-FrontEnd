@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   repository_dispatch:
-    types:
-      - trigger-event
+    types: [trigger-event]
 
 jobs:
   build:
