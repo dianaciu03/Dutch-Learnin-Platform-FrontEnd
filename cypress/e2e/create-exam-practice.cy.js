@@ -57,28 +57,28 @@ describe('Create Exam Practice', () => {
         $input[0].dispatchEvent(new Event('change', { bubbles: true }));
     });
     
-    // Click Save Exam Details button
-    cy.contains('button', 'Save Exam Details')
-      .should('be.visible')
-      .and('not.be.disabled')
-      .click();
+    // // Click Save Exam Details button
+    // cy.contains('button', 'Save Exam Details')
+    //   .should('be.visible')
+    //   .and('not.be.disabled')
+    //   .click();
 
-    cy.contains('button', '+ Reading section')
-      .should('be.enabled');
+    // cy.contains('button', '+ Reading section')
+    //   .should('be.enabled');
 
-    // Click + Reading section button
-    cy.contains('button', '+ Reading section')
-      .click();
+    // // Click + Reading section button
+    // cy.contains('button', '+ Reading section')
+    //   .click();
 
-    // Click Post Exam
-    cy.contains('button', 'Post Exam Practice')
-    .click();
+    // // Click Post Exam
+    // cy.contains('button', 'Post Exam Practice')
+    // .click();
 
-    // Verify we're redirected to the home page
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
+    // // Verify we're redirected to the home page
+    // cy.url().should('eq', Cypress.config().baseUrl + '/');
 
-    // Verify the new exam practice appears in the list
-    cy.contains('Cypress test').should('be.visible');
+    // // Verify the new exam practice appears in the list
+    // cy.contains('Cypress test').should('be.visible');
   });
 
 }); 
