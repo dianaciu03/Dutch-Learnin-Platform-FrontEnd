@@ -6,6 +6,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import DownloadIcon from '@mui/icons-material/Download';
+import AddIcon from '@mui/icons-material/Add';
 import useAuthStore from '../store/authStore';
 
 function Sidebar() {
@@ -55,6 +56,14 @@ function Sidebar() {
               <Link to="#" onClick={(e) => e.preventDefault()}>
                 <DownloadIcon className="menu-icon" />
                 Export personal data
+              </Link>
+            </li>
+          )}
+          {isAuthenticated && (
+            <li>
+              <Link to="/knowtime-study-set">
+                <AddIcon className="menu-icon" />
+                Create a study set powered by Knowtime
               </Link>
             </li>
           )}

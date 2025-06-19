@@ -17,7 +17,6 @@ export function ExamPracticeProvider({ children }) {
       setLoading(true);
       const response = await axiosInstance.get('/exams');
       // Ensure response.data is an array before sorting
-      console.log('Response data when fetching exams:', response.data);
       const practices = response.data.examList;
       setExamPractices(practices.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       setError(null);

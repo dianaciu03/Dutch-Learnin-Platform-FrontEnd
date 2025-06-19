@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import ExamPractice from './pages/ExamPractice';
 import ExamPracticeDetails from './pages/ExamPracticeDetails';
 import TermsAndConditions from './pages/TermsAndConditions';
+import KnowtimeStudySet from './pages/KnowtimeStudySet';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/create-exam" element={<ExamPractice />} />
           <Route path="/exam-practice/:id" element={<ExamPracticeDetails />} />
           <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/knowtime-study-set" element={<KnowtimeStudySet />} />
         </Routes>
       </ExamPracticeProvider>
     </Router>

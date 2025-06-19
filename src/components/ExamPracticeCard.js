@@ -22,10 +22,7 @@ function ExamPracticeCard({ examPractice }) {
     });
   }
   const sections = Array.from(sectionsSet);
-  console.log(sections);
-
   const selectedLevel = CEFRLevelOptions.find(option => option.value === examPractice.level);
-  console.log(selectedLevel);
 
   return (
     <Card sx={{ 
