@@ -32,7 +32,7 @@ jobs:
       - name: Build Application
         run: npm run build
 
-  deploy:
+  deploy_docker:
     name: Deploy with Docker Compose
     runs-on: ubuntu-latest
     needs: build
@@ -87,7 +87,7 @@ jobs:
   push-image:
     name: Push Frontend Image to DockerHub
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: deploy_docker
 
     steps:
       - name: Checkout Code
@@ -103,3 +103,40 @@ jobs:
 
       - name: Push Frontend Docker Image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/slim-studie-frontend:latest
+
+  build_and_deploy_to_azure:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    name: Build and Deploy to Azure
+    runs-on: ubuntu-latest
+    needs: deploy_docker
+    permissions:
+       id-token: write
+       contents: read
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+      - name: Install OIDC Client from Core Package
+        run: npm install @actions/core@1.6.0 @actions/http-client
+      - name: Get Id Token
+        uses: actions/github-script@v6
+        id: idtoken
+        with:
+           script: |
+               const coredemo = require('@actions/core')
+               return await coredemo.getIDToken()
+           result-encoding: string
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_RED_SAND_068081A03 }}
+          action: "upload"
+          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_location: "/" # App source code path
+          api_location: "" # Api source code path - optional
+          output_location: "build" # Built app content directory - optional
+          github_id_token: ${{ steps.idtoken.outputs.result }}
+          ###### End of Repository/Build Configurations ######
