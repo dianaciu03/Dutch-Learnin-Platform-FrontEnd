@@ -1,10 +1,12 @@
-name: Frontend CI/CD
+name: SlimStudie Frontend CI/CD
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  repository_dispatch:
+    types: [trigger-event]
 
 jobs:
   build:
