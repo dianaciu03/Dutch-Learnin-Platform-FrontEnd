@@ -4,7 +4,7 @@ export const msalConfig = {
     authority: 'https://slimstudieapp.ciamlogin.com/slimstudieapp.onmicrosoft.com',
     redirectUri: 'http://localhost:3001',
     postLogoutRedirectUri: 'http://localhost:3001',
-    navigateToLoginRequestUrl: true,
+    navigateToLoginRequestUrl: false,
   },
   cache: {
     cacheLocation: 'sessionStorage', 

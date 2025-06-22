@@ -113,7 +113,6 @@ function Reading({ onDelete, id, examId }) {
       </Box>
 
       <TextField
-        label="reading-text-input"
         fullWidth
         multiline
         rows={4}
@@ -142,7 +141,6 @@ function Reading({ onDelete, id, examId }) {
             </IconButton>
           </Box>
           <TextField
-            label="question-input"
             fullWidth
             multiline
             rows={2}
@@ -163,7 +161,6 @@ function Reading({ onDelete, id, examId }) {
           />
           <Typography variant="subtitle1" sx={{ mb: 1 }}>Answer {index + 1}</Typography>
           <TextField
-            label="answer-input"
             fullWidth
             multiline
             rows={2}

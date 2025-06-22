@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../config/axiosConfig';
 
 const ExamPracticeContext = createContext();
@@ -8,11 +8,7 @@ export function ExamPracticeProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchExamPractices();
-  }, []);
-
-  const fetchExamPractices = async () => {
+  const fetchExamPractices = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get('/exams');
@@ -26,7 +22,36 @@ export function ExamPracticeProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchExamPractices();
+  }, [fetchExamPractices]);
+
+  const fetchExamPracticeDetails = useCallback(async (examId) => {
+    try {
+      const response = await axiosInstance.get(`/exams/${examId}`);
+      // Handle the response structure where it returns examList with 1 element
+      const detailedExam = response.data.examList ? response.data.examList[0] : response.data;
+      
+      console.log('Fetched detailed exam data:', detailedExam);
+      console.log('Exam components with details:', detailedExam.examComponents);
+      
+      // Update the examPractices state with the detailed data
+      setExamPractices(prev => {
+        const updated = prev.map(exam => 
+          exam.id === examId ? detailedExam : exam
+        );
+        console.log('Updated exam practices state:', updated);
+        return updated;
+      });
+      
+      return detailedExam;
+    } catch (err) {
+      console.error('Error fetching exam practice details:', err);
+      throw err;
+    }
+  }, []);
 
   const addExamPractice = async (newPractice) => {
     try {
@@ -43,7 +68,14 @@ export function ExamPracticeProvider({ children }) {
   };
 
   return (
-    <ExamPracticeContext.Provider value={{ examPractices, loading, error, addExamPractice, fetchExamPractices }}>
+    <ExamPracticeContext.Provider value={{ 
+      examPractices, 
+      loading, 
+      error, 
+      addExamPractice, 
+      fetchExamPractices,
+      fetchExamPracticeDetails 
+    }}>
       {children}
     </ExamPracticeContext.Provider>
   );

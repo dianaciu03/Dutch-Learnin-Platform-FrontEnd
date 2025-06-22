@@ -7,10 +7,14 @@ import Navbar from '../components/Navbar';
 import { CEFRLevelOptions } from '../enums/CEFRLevel';
 import Reading from '../components/Reading';
 import { useExamPractice } from '../context/ExamPracticeContext';
+import useAuthStore from '../store/authStore';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 function ExamPractice() {
   const navigate = useNavigate();
   const { fetchExamPractices } = useExamPractice();
+  const authStore = useAuthStore();
 
   // Load initial state from localStorage or use defaults
   const [level, setLevel] = useState(() => {
@@ -86,11 +90,22 @@ function ExamPractice() {
     setError(null);
 
     try {
+      let teacherId = null;
+      if (authStore.token) {
+        try {
+          const decoded = jwtDecode(authStore.token);
+          teacherId = decoded.oid || decoded.teacherId || decoded.sub || null;
+        } catch (e) {
+          console.error('Failed to decode token for teacherId:', e);
+        }
+      }
+
       const payload = {
         id: createdExamId, 
         name: name,
         level: String(level),
-        maxPoints: parseInt(maxGrade) 
+        maxPoints: parseInt(maxGrade),
+        teacherId: teacherId
       };
 
       console.log('Sending exam details to backend:', payload);
@@ -104,6 +119,31 @@ function ExamPractice() {
       setCreatedExamId(examId);
       console.log('Created exam ID added to state:', examId);
       console.log('Current state after update:', { createdExamId: examId, name, level, maxGrade });
+
+      // Make the teacher-account connection request
+      if (teacherId && examId) {
+        try {
+          const teacherConnectionPayload = {
+            TeacherId: teacherId,
+            ExamId: examId
+          };
+          
+          console.log('Save teacher-exam connection:', teacherConnectionPayload);
+          
+          await axios.post('http://localhost:5002/accounts/teacher-account', teacherConnectionPayload, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            withCredentials: true
+          });
+          
+          console.log('Teacher-account connection created successfully');
+        } catch (connectionError) {
+          console.error('Error creating teacher-account connection:', connectionError);
+          // Don't fail the exam save if this connection fails
+        }
+      }
     } catch (err) {
       console.error('Error saving exam details:', err);
       
